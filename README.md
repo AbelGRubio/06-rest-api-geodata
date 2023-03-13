@@ -32,7 +32,9 @@ a la respuesta del servidor.
 el tiempo ocupe más espacio. Tenemos una tabla que se llama relaciones, que tiene una 
 cardinalidad 1 a 1 con la tabla **master** (solo hay un usuario relacionado con un codigo postal)
 y una cardinalidad de varios usuarios a 1 un codigo postal con la tabla de **details**. 
-
+6. **Archivo requirements.txt**: este archivo sirve para conocer qué es lo necesario para ejecutar el software.
+De este modo solo instalaríamos lo necesario en la imagen docker correspondiente cuando queramos ejecutar este software en 
+un pod de kubernetes. 
 
 ![Database diagram](assets/imgs/database.png)
 > Diagrama creado gracias a la plataforma [dbdiagram.io](dbdiagram.io)
@@ -42,3 +44,19 @@ y una cardinalidad de varios usuarios a 1 un codigo postal con la tabla de **det
 
 Para realizar este software se ha empleado la metodología TDD (Test Driven Development) 
 e intentando aplicar en la medida de lo posible los principios SOLID.  
+
+
+# Como ejecutarlo 
+
+El software principal se ejecuta a partir del archivo main.py
+
+```
+python main.py
+```
+
+Y la línea de codigo para ejecutar los test es:
+```
+python test.py
+```
+
+
