@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 from .logger_api import LoggerApi
 
-__version__ = '0.0.8'
+__version__ = '0.0.10'
 
 load_dotenv()
 
