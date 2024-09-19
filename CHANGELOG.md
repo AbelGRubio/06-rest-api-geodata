@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.0.7 (2024-09-19)
+
+### Fix
+
+* fix(Abel): last configuration change I ([`161d4fc`](https://github.com/AbelGRubio/06-rest-api-geodata/commit/161d4fc73c7ecaea50da419f11fa94815a6e4044))
+
 ## v0.0.6 (2024-09-19)
 
 ### Fix
