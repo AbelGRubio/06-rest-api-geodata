@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.0.8 (2024-09-19)
+
+### Fix
+
+* fix(Abel): update README.md ([`1800251`](https://github.com/AbelGRubio/06-rest-api-geodata/commit/18002511b19261b8a86a0bdf9982185438552203))
+
 ## v0.0.7 (2024-09-19)
 
 ### Fix
