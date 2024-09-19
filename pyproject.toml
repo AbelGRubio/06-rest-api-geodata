@@ -7,8 +7,7 @@ tag_commit = "true"
 changelog_file="CHANGELOG.md"
 build_command="python setup.py sdist bdist_wheel"
 
-[tool.semantic_release.github]
-repository_url="https://github.com/AbelGRubio/06-rest-api-geodata.git"
+[tool.semantic_release.remote]
 token = "token"
 
 [tool.semantic_release]
