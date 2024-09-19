@@ -1,62 +1,51 @@
 
 
-# Justificaciones: 
+# Justifications:
 
-La estructura del software planteada ha sido con la finalidad
-de que se permita añadir o extender nuevas funcionalidades. 
-Por tanto, ahora se justifican alguna de las decisiones tomadas
+The software structure has been proposed with the purpose
+of allowing the addition or extension of new functionalities.
+Therefore, some of the decisions taken are now justified
 
-
-1. **Utilización del archivo .env**: En este archivo se recoge la 
-congiguración del programa realizado. Esto nos permite, en un futuro,
-modificar las variables a nuestro gusto. Además, permite identificar 
-que variables son relevantes para incluirlas en los configMap y utilizarlos
-en kubernetes.
-2. **Incluir un logger**: Se incluye el logger para recoger toda lo que ocurre dentro del software.
-Para poder identificar en un futuro los posibles errores que se den.
-3. **Modulo para la app ''api_module''**: En este modulo se incluye todo lo necesario para que funcione la restAPI. 
-Se pueden distinguir los siguentes modulos:
-   * functions: conjunto de funciones relevantes 
-   * global_variables: módulo que lee las variables del .env y las utiliza en el programa.
-   * schemas: modelos utilizados para intercambiar la información en los endpoints
-   * logger_api: se define el logger para ir registrando qué hace el software.
-   * sql_commands: define la conexión con la base de datos y funciones utiles para ejecutar los comandos. 
-También es donde se recogen todos los comandos sql. 
-   * routes: modulo donde se van a definir cada una de las rutas que ha de tener la API. Habrá un archivo por cada tipo de método 
-HTTP que se tenga que implementar. Es decir, un modulo para get y se definen todos los endpoints relacionados con el método get
-otro para patch, post... 
-4. **Modulo para los test**: En este modulo se pueden distinguir 
-distintas tipos de test. Los orientados a la base de datos, y los orientados
-a la respuesta del servidor. 
-5. **Definición de la base de datos**: Para evitar la redundancia de datos y que con 
-el tiempo ocupe más espacio. Tenemos una tabla que se llama relaciones, que tiene una 
-cardinalidad 1 a 1 con la tabla **master** (solo hay un usuario relacionado con un codigo postal)
-y una cardinalidad de varios usuarios a 1 un codigo postal con la tabla de **details**. 
-6. **Archivo requirements.txt**: este archivo sirve para conocer qué es lo necesario para ejecutar el software.
-De este modo solo instalaríamos lo necesario en la imagen docker correspondiente cuando queramos ejecutar este software en 
-un pod de kubernetes. 
+1. **Use of the .env file**: This file contains the
+configuration of the program made. This allows us, in the future,
+to modify the variables to our liking. In addition, it allows us to identify
+which variables are relevant to include in the configMap and use them
+in kubernetes.
+2. **Include a logger**: The logger is included to collect everything that happens within the software.
+In order to identify possible errors that may occur in the future.
+3. **Module for the app ''api_module''**: This module includes everything necessary for the restAPI to work.
+The following modules can be distinguished:
+* functions: set of relevant functions
+* global_variables: module that reads the variables from the .env and uses them in the program.
+* schemas: models used to exchange information in the endpoints
+* logger_api: the logger is defined to record what the software does.
+* sql_commands: defines the connection to the database and useful functions to execute the commands.
+It is also where all the sql commands are collected.
+* routes: module where each of the routes that the API must have will be defined. There will be a file for each type of HTTP method that must be implemented. That is, a module for get and all the endpoints related to the get method are defined
+another for patch, post...
+4. **Module for tests**: In this module, different types of tests can be distinguished. Database-oriented and server-response-oriented.
+5. **Database definition**: To avoid data redundancy and over time it takes up more space. We have a table called relations, which has a
+cardinality of 1 to 1 with the **master** table (there is only one user related to a postal code)
+and a cardinality of several users to 1 a postal code with the **details** table.
+6. **Requirements.txt file**: This file is used to know what is necessary to run the software.
+In this way we would only install what is necessary in the corresponding docker image when we want to run this software in
+a kubernetes pod.
 
 ![Database diagram](assets/imgs/database.png)
-> Diagrama creado gracias a la plataforma [dbdiagram.io](dbdiagram.io)
+> Diagram created on [dbdiagram.io](dbdiagram.io)
 
 
-# Metodología 
+# Methodology
 
-Para realizar este software se ha empleado la metodología TDD (Test Driven Development) 
-e intentando aplicar en la medida de lo posible los principios SOLID.  
+The TDD (Test Driven Development) methodology has been used to create this software
+and the SOLID principles have been applied as far as possible.
 
+# How to run it
 
-# Como ejecutarlo 
-
-El software principal se ejecuta a partir del archivo main.py
+The main software is run from the main.py file
 
 ```
 python main.py
-```
-
-Y la línea de codigo para ejecutar los test es:
-```
-python test.py
 ```
 
 
