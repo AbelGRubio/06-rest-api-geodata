@@ -6,7 +6,7 @@ upload_to_repository = true
 tag_commit = "true"
 changelog_file="CHANGELOG.md"
 build_command="python setup.py sdist; python setup.py bdist_wheel"
-version_variable = "./src/geo_api/configuration.py:__version__"
+version_variable = "src/geo_api/configuration.py:__version__"
 
 [tool.semantic_release.remote]
 token = "$GH_TOKEN"
