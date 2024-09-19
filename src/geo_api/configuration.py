@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from .functions import check_exist_database
 from .logger_api import LoggerApi
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 load_dotenv()
 
