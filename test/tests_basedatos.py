@@ -1,11 +1,6 @@
-import os
-from dotenv import load_dotenv
-from api_module.functions import exist_user
-from api_module.sql_commands import execute_sql_command, define_command_sql
-
-load_dotenv()
-
-DATABASE_NAME = os.getenv("DATABASE_NAME")
+from src.geo_api.functions import exist_user
+from src.geo_api.sql_commands import execute_sql_command, define_command_sql
+from src.geo_api.configuration import  DATABASE_NAME
 
 
 def test_add_twice_users_db():

@@ -1,16 +1,10 @@
 import os
 
 import requests
-from dotenv import load_dotenv
 
-from .logger_api import LOGGER
+from .configuration import LOGGER
 from .schemas import UserFullParameters, UserParameters
 from .sql_commands import execute_sql_command, define_command_sql
-
-load_dotenv()
-
-EXIST_USER_MSG = os.getenv("EXIST_USER_MSG")
-ADDED_USER_MSG = os.getenv("ADDED_USER_MSG")
 
 
 def check_all_vars(vtc: list) -> bool:
@@ -21,7 +15,8 @@ def check_all_vars(vtc: list) -> bool:
     :param vtc: variable names to check if exits on the environment.
     :type vtc: list
 
-    :return: false if any variable doesn't exist on the environment, true otherwise.
+    :return: false if any variable doesn't exist on the environment,
+    true otherwise.
     """
     for var_name in vtc:
         if var_name not in os.environ.keys():
@@ -50,7 +45,8 @@ def get_direction_from_response(
         placename = response.json()['postalCodes'][0]['placeName']
         adminname = response.json()['postalCodes'][0]['adminName1']
         country = response.json()['postalCodes'][0]['countryCode']
-        return ', '.join([placename, adminname, country]) if full_dir else placename
+        return ', '.join([placename, adminname, country]) \
+            if full_dir else placename
     except Exception as e:
         LOGGER.error(f'Error getting information from request. Msg {e}')
         return ' '
@@ -172,7 +168,7 @@ def add_user_to_database(
     """
     the_user_exist = exist_user(database, new_user.user)
 
-    msg = EXIST_USER_MSG
+    msg = "Already exist the user!"
     state = True
 
     if not the_user_exist:
@@ -182,7 +178,8 @@ def add_user_to_database(
         *_, max_id_relations = get_max_key_database(database, 'relations')
         id_relations = max_id_relations + 1
 
-        state_details, _, value = get_id_postal_code(database, new_user.postal_code)
+        state_details, _, value = get_id_postal_code(database,
+                                                     new_user.postal_code)
 
         id_details = value if state_details else value + 1
 
@@ -197,10 +194,11 @@ def add_user_to_database(
 
             if not state_details:
                 command = define_command_sql(
-                    'insert.details', id_details, new_user.postal_code, new_user.city)
+                    'insert.details', id_details, new_user.postal_code,
+                    new_user.city)
                 execute_sql_command(database, command)
 
-            msg = ADDED_USER_MSG
+            msg = "User added to database!"
             state = True
 
         except Exception as e:

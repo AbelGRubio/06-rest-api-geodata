@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 from api_module.functions import exist_user
 
-from main import APP
+from src.__main__ import APP
 
 load_dotenv()
 

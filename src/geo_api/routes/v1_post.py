@@ -3,14 +3,17 @@ from fastapi.responses import JSONResponse
 
 from ..functions import add_user_to_database, get_full_user_information, \
     get_direction_from_response, check_response_geoson
-from ..global_variables import APP, API_GEO_URL, DATABASE_NAME, LOGGER
+from ..configuration import API_GEO_URL, DATABASE_NAME, LOGGER
 from ..schemas import UserParameters
+from fastapi import APIRouter
+
+v1_router = APIRouter()
 
 
-@APP.post(
+@v1_router.post(
     '/add_user',
     response_class=JSONResponse)
-def add_user(user_parameter: UserParameters):
+def add_user(user_parameter: UserParameters) -> JSONResponse:
     """
     Add a new user to database
 
