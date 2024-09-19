@@ -4,6 +4,8 @@
 
 ### Fix
 
+* fix(Abel): run without problems ([`31437c7`](https://github.com/AbelGRubio/06-rest-api-geodata/commit/31437c756823e2c53bc93f9eb05ebff63576a271))
+
 * fix(Abel): last configuration change I ([`161d4fc`](https://github.com/AbelGRubio/06-rest-api-geodata/commit/161d4fc73c7ecaea50da419f11fa94815a6e4044))
 
 ## v0.0.6 (2024-09-19)
