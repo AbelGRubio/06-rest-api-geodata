@@ -1,6 +1,5 @@
 [semantic_release]
 branch="master"
-version_variable="src/geo_api/__init__.py:__version__"
 upload="twine upload dist/*"
 upload_to_pypi = "false"
 upload_to_repository = "true"
@@ -8,9 +7,9 @@ tag_commit = "true"
 changelog_file="CHANGELOG.md"
 build_command="python setup.py sdist bdist_wheel"
 
-[semantic_release.github]
+[tool.semantic_release.github]
 repository_url="https://github.com/AbelGRubio/06-rest-api-geodata.git"
-token="token"
-
-[semantic_release.remote]
 token = "token"
+
+[tool.semantic_release]
+version_variable = "./src/geo_api/__init__.py:__version__"
