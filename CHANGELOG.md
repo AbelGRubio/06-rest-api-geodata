@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.0.9 (2024-09-19)
+
+### Fix
+
+* fix(Abel): update .toml ([`65403ec`](https://github.com/AbelGRubio/06-rest-api-geodata/commit/65403ec02bb53d38b8af3090e853edc7e670bc4b))
+
 ## v0.0.8 (2024-09-19)
 
 ### Fix
