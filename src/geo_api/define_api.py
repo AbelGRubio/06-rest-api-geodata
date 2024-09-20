@@ -25,7 +25,7 @@ APP.include_router(
     tags=["Service 2: v1 endpoints"]
 )
 
-# APP.add_middleware(AuthMiddleware)
+APP.add_middleware(AuthMiddleware)
 
 DATABASE.connect()
 DATABASE.create_tables([ApiUser])

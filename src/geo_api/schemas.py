@@ -8,13 +8,15 @@ class UserSchema(BaseModel):
 
     class Config:
         orm_mode = True
+        from_attributes = True
 
 
 class ShowUserSchema(BaseModel):
-    id: str = ''
+    id: int = 0
     name: str = ''
     postal_code: str = ''
     city: str = '-'
 
     class Config:
         orm_mode = True
+        from_attributes = True

@@ -57,10 +57,10 @@ def add_user(user_: UserSchema) -> str:
             user_.city = get_direction_from_response(
                 response=response)
 
-    exist_user = ApiUser.get_or_none(**user_.dict())
+    exist_user = ApiUser.get_or_none(**user_.model_dump())
 
     if not exist_user:
-        new_user = ApiUser.create(**user_.dict())
+        new_user = ApiUser.create(**user_.model_dump())
         message = message.format(new_user.id, new_user.name)
     else:
         message = 'The user already exists!'
@@ -79,7 +79,7 @@ def update_user(user_: ApiUser, user_update: UserSchema) -> ApiUser:
 
     :return: An updated ApiUser instance with the new data applied.
     """
-    user_dict_ = user_update.dict(exclude_unset=True)
+    user_dict_ = user_update.model_dump(exclude_unset=True)
 
     user_.update(**user_dict_).where(ApiUser.id == user_.id).execute()
 
