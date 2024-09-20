@@ -5,7 +5,7 @@ from peewee import SqliteDatabase
 
 from .logger_api import LoggerApi
 
-__version__ = '0.0.10'
+__version__ = '0.1.0'
 
 load_dotenv()
 

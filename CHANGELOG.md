@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v0.1.0 (2024-09-20)
+
+### Feature
+
+* feat(Abel): added .coverage ([`3a30302`](https://github.com/AbelGRubio/06-rest-api-geodata/commit/3a30302986b7e549efcc3dba597734e818a10d03))
+
+* feat(Abel): added test and logging middleware ([`e9e3ace`](https://github.com/AbelGRubio/06-rest-api-geodata/commit/e9e3ace627094a8304ae8576755b18fb6eab0906))
+
+* feat(Abel): added CRUD operations ([`81def0f`](https://github.com/AbelGRubio/06-rest-api-geodata/commit/81def0f29e0224eed173d229ae8638311d0b378a))
+
 ## v0.0.10 (2024-09-19)
 
 ### Fix
