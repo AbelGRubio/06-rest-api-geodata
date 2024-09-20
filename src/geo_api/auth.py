@@ -8,7 +8,16 @@ from .configuration import API_KEY
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
-    """ middleware """
+    """
+
+    This code defines an AuthMiddleware class that extends BaseHTTPMiddleware
+    to handle authentication for incoming HTTP requests. It checks if the
+    request URL is in a predefined list of paths that do not require
+    authentication. If the URL is not in this list, it verifies the
+    presence of a valid API key in the request headers before allowing
+    the request to proceed.
+
+     """
     __jump_paths__ = ['/docs', '/openapi.json', '/redoc',
                       '/health', '/favicon.ico']
 
@@ -31,14 +40,28 @@ class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
+        """
+        The dispatch method in the AuthMiddleware class is an asynchronous
+        middleware function that processes incoming HTTP requests.
+        It checks if the request URL is in a predefined list of paths
+        that do not require authentication. If the URL is not in this
+        list, it verifies the presence of a valid API key in the request
+         headers before allowing the request to proceed.
 
+        :param request:  An instance of Request representing the incoming
+            HTTP request.
+        :param call_next: A callable (RequestResponseEndpoint) that processes
+            the next middleware or the actual request handler
+
+        :return: Returns a Response object, either from the next
+            middleware/request handler or an unauthorized response.
+        """
         if self._is_jump_url_(request):
             return await call_next(request)
 
         response = self.unauthorised()
 
         if self.get_api_key(request) == API_KEY:
-
             response = await call_next(request)
 
         return response

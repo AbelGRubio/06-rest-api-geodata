@@ -1,30 +1,11 @@
-import os
-
 import requests
 
-from .configuration import LOGGER
-from .schemas import UserFullParameters, UserParameters
-from .sql_commands import execute_sql_command, define_command_sql
+from .configuration import LOGGER, API_GEO_URL
+from .models import ApiUser
+from .schemas import UserSchema
 
 
-def check_all_vars(vtc: list) -> bool:
-    """
-    vtc variables to check
-    Check if all variables exits on the .env file.
-
-    :param vtc: variable names to check if exits on the environment.
-    :type vtc: list
-
-    :return: false if any variable doesn't exist on the environment,
-    true otherwise.
-    """
-    for var_name in vtc:
-        if var_name not in os.environ.keys():
-            return False
-    return True
-
-
-def check_response_geoson(response: requests):
+def check_response_geojson(response: requests):
     return len(response.json()['postalCodes']) > 0
 
 
@@ -42,228 +23,66 @@ def get_direction_from_response(
     :type :return: str
     """
     try:
-        placename = response.json()['postalCodes'][0]['placeName']
-        adminname = response.json()['postalCodes'][0]['adminName1']
-        country = response.json()['postalCodes'][0]['countryCode']
-        return ', '.join([placename, adminname, country]) \
-            if full_dir else placename
+        postal_codes_ = response.json()['postalCodes'][0]
+        place_ = postal_codes_['placeName']
+        admin_ = postal_codes_['adminName1']
+        country = postal_codes_['countryCode']
+        return ', '.join([place_, admin_, country]) \
+            if full_dir else place_
     except Exception as e:
         LOGGER.error(f'Error getting information from request. Msg {e}')
         return ' '
 
 
-def get_full_user_information(
-        user_parameter: UserParameters, city: str) -> UserFullParameters:
+def add_user(user_: UserSchema) -> str:
     """
-    Complete the information to save on the database.
+    This function adds a user to the database. It first checks if the user's
+    city is unknown and attempts to fetch it using an external API.
+    If the user does not already exist in the database,
+    it creates a new user entry; otherwise, it returns a message
+    indicating the user already exists.
 
-    :param user_parameter: previous schema without city value
-    :type user_parameter: UserParameters
-    :param city: city name
-    :type city: str
+    :param user_: An instance of UserSchema containing user details such as
+        name, postal_code, and city.
 
-    :return: a schema with all information to include on the database
-    :type :return: UserFullParameters
+    :return: A string message indicating whether the user was added to the
+        database or already exists.
     """
-    full_user_parameters = UserFullParameters()
-    full_user_parameters.postal_code = user_parameter.postal_code
-    full_user_parameters.user = user_parameter.user
-    full_user_parameters.city = city
-    return full_user_parameters
+    message = "Added user {}:{} to database."
 
+    if user_.city == '-':
+        response = requests.get(API_GEO_URL.format(user_.postal_code))
 
-def get_max_key_database(database: str, table: str) -> (bool, str, int):
-    """
-    Get the max primary key of a table,
-        * if the table is empty will get value of 0
-        * Any error return value of -1
-        * Otherwise return the value
+        if check_response_geojson(response):
+            user_.city = get_direction_from_response(
+                response=response)
 
-    :param database: database name
-    :type database: str
-    :param table: table name
-    :type table: str
+    exist_user = ApiUser.get_or_none(**user_.dict())
 
-    :return: boolean True it everything was ok, false other case.
-             str message for the logger.
-             int value of index.
-    :type :return: (bool, str, int):
-    """
-    msg = 'Getting the max id for {}'.format(table)
-    state = True
-    try:
-        command = define_command_sql('select.max', table)
-        result = execute_sql_command(database, command)
-        value = result[0][0]
-        if value is None:
-            value = 0
-    except Exception as e:
-        msg = 'Error getting the index. Msg: {}'.format(e)
-        state = False
-        value = -1
-
-    if state:
-        LOGGER.debug(msg)
+    if not exist_user:
+        new_user = ApiUser.create(**user_.dict())
+        message = message.format(new_user.id, new_user.name)
     else:
-        LOGGER.error(msg)
+        message = 'The user already exists!'
 
-    return state, msg, value
+    return message
 
 
-def get_id_postal_code(database: str, postal_code: str) -> (bool, str, int):
+def update_user(user_: ApiUser, user_update: UserSchema) -> ApiUser:
     """
-    get the id for the postal code.
+    This function updates an existing ApiUser instance with new data provided
+    in a UserSchema instance and returns the updated ApiUser
 
-    :param database: database name
-    :type database: str
-    :param postal_code:
-    :type postal_code: str
+    :param user_: An instance of ApiUser representing the user to be updated.
+    :param user_update:  An instance of UserSchema containing the new data
+        for the user.
 
-    :return: boolean True it everything was ok, false other case.
-             str message for the logger.
-             int value of index.
-    :type :return: (bool, str, int):
+    :return: An updated ApiUser instance with the new data applied.
     """
-    msg = 'Getting the id for postal code {}'.format(postal_code)
+    user_dict_ = user_update.dict(exclude_unset=True)
 
-    try:
-        command = define_command_sql('select.postal_code', postal_code)
-        result = execute_sql_command(database, command)
-        value = result[0][0]
-        state = True
-    except Exception as e:
-        _, msg, value = get_max_key_database(database, 'details')
-        state = False
+    user_.update(**user_dict_).where(ApiUser.id == user_.id).execute()
 
-    return state, msg, value
+    user_updated = ApiUser.get(ApiUser.id == user_.id)
 
-
-def exist_user(
-        database: str, username: str):
-    """
-    Check if the user is already on the database
-
-    :param database:
-    :param username:
-
-    :return: True if the user already exist on the database, false otherwise
-    """
-    command = define_command_sql('select.username', username)
-    result = execute_sql_command(database, command)
-    exist = len(result) > 0
-    return exist
-
-
-def add_user_to_database(
-        database: str,
-        new_user: UserFullParameters) -> (bool, str):
-    """
-    Try to add a new user to the database. After all check if
-    already exist the user.
-
-    :param database:
-    :param new_user:
-
-    :return: a boolean if everything was ok.
-    """
-    the_user_exist = exist_user(database, new_user.user)
-
-    msg = "Already exist the user!"
-    state = True
-
-    if not the_user_exist:
-        *_, max_id_master = get_max_key_database(database, 'master')
-        id_master = max_id_master + 1
-
-        *_, max_id_relations = get_max_key_database(database, 'relations')
-        id_relations = max_id_relations + 1
-
-        state_details, _, value = get_id_postal_code(database,
-                                                     new_user.postal_code)
-
-        id_details = value if state_details else value + 1
-
-        try:
-            command = define_command_sql(
-                'insert.master', id_master, new_user.user)
-            execute_sql_command(database, command)
-
-            command = define_command_sql(
-                'insert.relations', id_relations, id_master, id_details)
-            execute_sql_command(database, command)
-
-            if not state_details:
-                command = define_command_sql(
-                    'insert.details', id_details, new_user.postal_code,
-                    new_user.city)
-                execute_sql_command(database, command)
-
-            msg = "User added to database!"
-            state = True
-
-        except Exception as e:
-            state = False
-            msg = e
-
-    if state:
-        LOGGER.debug(msg)
-    else:
-        LOGGER.error(msg)
-
-    return state, msg
-
-
-def create_database(database: str) -> None:
-    """
-    Create a defined database with a specific name
-
-    :param database: database name
-    :type database: str
-
-    :return: Nothing
-    """
-    state = True
-    message = 'Database created!'
-
-    try:
-        command = define_command_sql(
-            'create.master')
-        execute_sql_command(database, command)
-
-        command = define_command_sql(
-            'create.relations')
-        execute_sql_command(database, command)
-
-        command = define_command_sql(
-            'create.details')
-        execute_sql_command(database, command)
-
-    except Exception as e:
-        message = "Error creating database. msg {}".format(e)
-        state = False
-
-    if state:
-        LOGGER.info(message)
-    else:
-        LOGGER.error(message)
-
-    return None
-
-
-def check_exist_database(database: str) -> None:
-    """
-    Check if the database exist, otherwise the database will be created
-
-    :param database: database name
-    :type database: str
-
-    :return:  Nothing
-    """
-    msg = 'Already exist the database!'
-
-    if not os.path.exists(database):
-        create_database(database)
-    else:
-        LOGGER.info(msg)
-
-    return None
+    return user_updated

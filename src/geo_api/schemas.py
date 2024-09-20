@@ -1,12 +1,20 @@
 from pydantic import BaseModel
 
 
-class UserParameters(BaseModel):
-    user: str = ''
+class UserSchema(BaseModel):
+    name: str = ''
     postal_code: str = ''
+    city: str = '-'
+
+    class Config:
+        orm_mode = True
 
 
-class UserFullParameters(BaseModel):
-    user: str = ''
+class ShowUserSchema(BaseModel):
+    id: str = ''
+    name: str = ''
     postal_code: str = ''
-    city: str = ''
+    city: str = '-'
+
+    class Config:
+        orm_mode = True

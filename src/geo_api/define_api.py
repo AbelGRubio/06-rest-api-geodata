@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 
 from .auth import AuthMiddleware
-from .configuration import __version__
+from .configuration import __version__, DATABASE
 from .routes import api_router, v1_router
+from .models import ApiUser
 
 APP = FastAPI(
     title="API Geo data",
@@ -24,4 +25,7 @@ APP.include_router(
     tags=["Service 2: v1 endpoints"]
 )
 
-APP.add_middleware(AuthMiddleware)
+# APP.add_middleware(AuthMiddleware)
+
+DATABASE.connect()
+DATABASE.create_tables([ApiUser])
