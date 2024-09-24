@@ -1,10 +1,12 @@
+from typing import List
+
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
 from ..configuration import LOGGER
 from ..functions import add_user, update_user
-from ..models import ApiUser
-from ..schemas import UserSchema, ShowUserSchema
+from ..models import ApiUser, Message
+from ..schemas import UserSchema, ShowUserSchema, MessageSchema
 
 v1_router = APIRouter()
 
@@ -44,6 +46,12 @@ def user_listing():
     return [ShowUserSchema.from_orm(usr_) for usr_ in users_]
 
 
+@v1_router.get("/messages")
+def get_messages() -> List[MessageSchema]:
+    messages = Message.select().order_by(Message.id.desc()).limit(10)
+    return [MessageSchema.from_orm(msg) for msg in messages]
+
+
 @v1_router.put("/users/{user_id}", response_model=UserSchema)
 def updating_user(user_id: str, user_update: UserSchema):
     """
@@ -70,3 +78,9 @@ def delete_user(user_id: int):
 
     user_.delete_instance()
     return JSONResponse(status_code=200, content="User deleted")
+
+
+@v1_router.delete("/messages")
+def delete_messages():
+    Message.delete().execute()
+    return JSONResponse(status_code=200, content="Message deleted")

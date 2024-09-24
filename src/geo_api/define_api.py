@@ -3,7 +3,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .auth import AuthMiddleware
 from .configuration import __version__, DATABASE
-from .models import ApiUser
+from .models import ApiUser, Message
 from .routes import api_router, v1_router, ws_router, wb_router
 
 APP = FastAPI(
@@ -44,4 +44,4 @@ APP.include_router(
 # APP.add_middleware(AuthMiddleware)
 
 DATABASE.connect()
-DATABASE.create_tables([ApiUser])
+DATABASE.create_tables([ApiUser, Message])

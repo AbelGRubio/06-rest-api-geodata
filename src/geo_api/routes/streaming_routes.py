@@ -1,6 +1,7 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from ..configuration import MANAGER
+from ..models import Message
 
 ws_router = APIRouter()
 
@@ -11,7 +12,8 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
     try:
         while True:
             data = await websocket.receive_text()
-            await MANAGER.send_personal_message(f"You wrote: {data}", websocket)
+            Message.create(user_id=client_id, content=data)
+            # await MANAGER.send_personal_message(f"You wrote: {data}", websocket)
             await MANAGER.broadcast(f"Client #{client_id} says: {data}")
     except WebSocketDisconnect:
         MANAGER.disconnect(websocket)
