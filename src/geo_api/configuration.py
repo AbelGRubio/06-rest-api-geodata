@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from peewee import SqliteDatabase
 
+from .connection_manager import ConnectionManager
 from .logger_api import LoggerApi
 
 __version__ = '0.1.0'
@@ -18,3 +19,5 @@ DATABASE_NAME = os.getenv("DATABASE_NAME", "my_database.db")
 API_KEY = 'token'
 
 DATABASE = SqliteDatabase(DATABASE_NAME)
+
+MANAGER = ConnectionManager()
