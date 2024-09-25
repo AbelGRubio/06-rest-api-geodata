@@ -1,7 +1,11 @@
+import datetime
+import json
+
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from ..configuration import MANAGER
 from ..models import Message
+from ..schemas import MessageSchema
 
 ws_router = APIRouter()
 
@@ -12,9 +16,13 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
     try:
         while True:
             data = await websocket.receive_text()
-            Message.create(user_id=client_id, content=data)
+            msg = Message.create(user_id=client_id, content=data)
             # await MANAGER.send_personal_message(f"You wrote: {data}", websocket)
-            await MANAGER.broadcast(f"Client #{client_id} says: {data}")
+            msg_ = MessageSchema(user_id=client_id, content=data,
+                                 timestamp=msg.timestamp)
+            await MANAGER.broadcast(msg_.to_json())
     except WebSocketDisconnect:
         MANAGER.disconnect(websocket)
-        await MANAGER.broadcast(f"Client #{client_id} left the chat")
+        msg_ = MessageSchema(user_id=client_id, content="left the chat",
+                             timestamp=datetime.datetime.now())
+        await MANAGER.broadcast(msg_.to_json())

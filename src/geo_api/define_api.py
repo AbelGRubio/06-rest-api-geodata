@@ -15,6 +15,11 @@ APP = FastAPI(
 APP.mount("/static", StaticFiles(directory="static"),
           name="static")
 
+APP.mount("/css", StaticFiles(directory="static/css"),
+          name="css")
+
+APP.mount("/js", StaticFiles(directory="static/js"),
+          name="js")
 
 APP.include_router(
     router=api_router,

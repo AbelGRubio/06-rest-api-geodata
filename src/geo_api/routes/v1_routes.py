@@ -49,7 +49,7 @@ def user_listing():
 @v1_router.get("/messages")
 def get_messages() -> List[MessageSchema]:
     messages = Message.select().order_by(Message.id.desc()).limit(10)
-    return [MessageSchema.from_orm(msg) for msg in messages]
+    return [MessageSchema.from_orm(msg) for msg in messages[::-1]]
 
 
 @v1_router.put("/users/{user_id}", response_model=UserSchema)
