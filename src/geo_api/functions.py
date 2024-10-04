@@ -1,8 +1,11 @@
+import os.path
+
 import requests
 
-from .configuration import LOGGER, API_GEO_URL
+from .configuration import LOGGER, API_GEO_URL, SAVE_FOLDER
 from .models import ApiUser
 from .schemas import UserSchema
+from fastapi import UploadFile
 
 
 def check_response_geojson(response: requests):
@@ -86,3 +89,12 @@ def update_user(user_: ApiUser, user_update: UserSchema) -> ApiUser:
     user_updated = ApiUser.get(ApiUser.id == user_.id)
 
     return user_updated
+
+
+async def save_file(file: UploadFile):
+    des_ = os.path.join(SAVE_FOLDER, file.filename)
+    LOGGER.debug(f"Saving file: {file.filename}")
+    with open(des_, "wb") as f:
+        while content := await file.read(1024):  # Lee el archivo en bloques de 1024 bytes
+            f.write(content)
+    LOGGER.debug(f"Saved file: {file.filename}")

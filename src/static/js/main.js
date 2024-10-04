@@ -32,6 +32,19 @@ function createMessage(info){
 
 }
 
+function closeWebSocket() {
+    if (ws) {
+        ws.close(); // Cierra la conexión
+        cleanMessages();
+        const convTitle = document.getElementById('conversationTitle'); // Suponiendo que tienes un <ul> o <ol> con id="messages"
+        convTitle.textContent = 'USER DESCONECTED';
+
+        console.log('WebSocket cerrado.');
+    } else {
+        console.log('No hay WebSocket abierto para cerrar.');
+    }
+}
+
 ws.onmessage = function(event) {
     const info = JSON.parse(event.data);
     createMessage(info);
@@ -62,6 +75,13 @@ async function fetchMessages() {
         console.error('There was a problem with the fetch operation:', error);
     }
 }
+
+function cleanMessages(){
+    const messagesList = document.getElementById('messages'); // Suponiendo que tienes un <ul> o <ol> con id="messages"
+    messagesList.innerHTML = ''; // Limpiar mensajes existentes
+    console.log('Limpia los mensajes');
+}
+
 
 // Función para mostrar los mensajes en el DOM
 function displayMessages(messages) {

@@ -1,8 +1,8 @@
-from ..configuration import __version__
-
-from fastapi.responses import JSONResponse
 from fastapi import APIRouter
+from fastapi.responses import JSONResponse
+
 from ..configuration import DATABASE
+from ..configuration import __version__
 
 api_router = APIRouter()
 
@@ -23,3 +23,5 @@ def health() -> JSONResponse:
 def close_db():
     if not DATABASE.is_closed():
         DATABASE.close()
+
+

@@ -1,10 +1,11 @@
+import asyncio
 from typing import List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import JSONResponse
 
 from ..configuration import LOGGER
-from ..functions import add_user, update_user
+from ..functions import add_user, update_user, save_file
 from ..models import ApiUser, Message
 from ..schemas import UserSchema, ShowUserSchema, MessageSchema
 
@@ -38,6 +39,13 @@ def adding_user(user_parameter: UserSchema) -> JSONResponse:
         content={"msg": message},
         status_code=status_code,
     )
+
+
+@v1_router.post("/upload-files/")
+async def upload_files(files: List[UploadFile] = File(...)):
+    tasks = [save_file(file) for file in files]
+    results = await asyncio.gather(*tasks)
+    return {"uploaded_files": results}
 
 
 @v1_router.get("/users/", response_model=list[ShowUserSchema])
@@ -83,4 +91,6 @@ def delete_user(user_id: int):
 @v1_router.delete("/messages")
 def delete_messages():
     Message.delete().execute()
-    return JSONResponse(status_code=200, content="Message deleted")
+    return JSONResponse(status_code=200, content="Messages deleted")
+
+

@@ -29,6 +29,7 @@
 			</div>
 			<div class="expand">
 				<i class="fa fa-expand"></i>
+				<input type="button" onclick="closeWebSocket()" value="Close Socket" class="send-btn">
 			</div>
 		</div>
 		<div class="window-area">
@@ -54,7 +55,7 @@
 				</div>
 			</div>
 			<div class="chat-area">
-				<div class="title"><b>Conversation title</b><i class="fa fa-search"></i></div>
+				<div class="title"><b id="conversationTitle">Conversation title</b><i class="fa fa-search"></i></div>
 				<div class="chat-list" id="chatList">
 					<ul id="messages">
 						<li class="me">
@@ -70,7 +71,7 @@
 				</div>
 				<div class="input-area">
 					<div class="input-wrapper">
-						<input type="text" id="messageText" value="">
+						<input type="text" id="messageText" value="" onkeydown="if(event.key === 'Enter'){ sendMessage(); }">
 						<i class="fa fa-smile-o"></i>
 						<i class="fa fa-paperclip"></i>
 					</div>
@@ -101,10 +102,6 @@
 			</div>
 		</div>
 	</div>
-
-    <script>
-
-    </script>
 
 </body>
 </html>
