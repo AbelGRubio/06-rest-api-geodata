@@ -2,7 +2,7 @@ import os.path
 
 import requests
 
-from .configuration import LOGGER, API_GEO_URL, SAVE_FOLDER
+from .configuration import LOGGER, API_GEO_URL, SAVE_FOLDER, MANAGER
 from .models import ApiUser
 from .schemas import UserSchema
 from fastapi import UploadFile
@@ -92,9 +92,13 @@ def update_user(user_: ApiUser, user_update: UserSchema) -> ApiUser:
 
 
 async def save_file(file: UploadFile):
-    des_ = os.path.join(SAVE_FOLDER, file.filename)
+    des_ = os.path.join(
+        SAVE_FOLDER,
+        file.filename.replace(' ', '-'))
     LOGGER.debug(f"Saving file: {file.filename}")
-    with open(des_, "wb") as f:
-        while content := await file.read(1024):  # Lee el archivo en bloques de 1024 bytes
+    with open(des_, "ab") as f:
+        while content := await file.read(1024):
             f.write(content)
+    await MANAGER.broadcast(f"File attached: {file.filename} ")
     LOGGER.debug(f"Saved file: {file.filename}")
+

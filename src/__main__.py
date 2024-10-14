@@ -1,6 +1,11 @@
 import uvicorn
 
 from geo_api import APP, LOGGER, API_IP, API_PORT
+from geo_api.schemas import MessageSchema, ShowUserSchema, MessageMode
+
+
+class MyClass:
+    status = MessageMode()
 
 
 if __name__ == '__main__':

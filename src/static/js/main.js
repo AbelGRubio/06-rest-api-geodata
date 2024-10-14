@@ -32,8 +32,61 @@ function createMessage(info){
 
 }
 
+
+function addUserStatus(info){
+    const conList = document.getElementById('memberList');
+    const conEntrance = document.getElementById('Client ' + info.user_id);
+
+    if (conEntrance){
+       console.log("Entra aqui");
+       const changeIcon = conEntrance.getElementsByTagName('span')[0]
+       if (info.connection){
+           changeIcon.classList.remove('offline');
+           changeIcon.classList.add('online');
+       }
+       else {
+           changeIcon.classList.remove('online');
+           changeIcon.classList.add('offline');
+       }
+    }
+    else {
+        const conEntrance = document.createElement('li');
+
+        conEntrance.id = 'Client ' + info.user_id;
+        const spanEntrance = document.createElement("span");
+        const nameEntrance = document.createElement("span");
+        const iconEntrance = document.createElement("i");
+
+        iconEntrance.classList.add('fa');
+        iconEntrance.classList.add('fa-circle-o');
+        spanEntrance.classList.add("status");
+        if (info.connection) {
+            spanEntrance.classList.add("online");
+        }
+        else {
+            spanEntrance.classList.add("offline");
+        }
+
+        spanEntrance.appendChild(iconEntrance);
+        nameEntrance.textContent = 'Client ' + info.user_id;
+
+        conEntrance.appendChild(spanEntrance);
+        conEntrance.appendChild(nameEntrance);
+        conList.appendChild(conEntrance);
+    }
+}
+
+
 function closeWebSocket() {
     if (ws) {
+         const disconnectMessage = {
+                user_id: userId,  // Reemplaza con el ID de usuario correspondiente
+                type: 'disconnect',
+                content: 'User has disconnected.',
+                timestamp: new Date().toISOString()
+            };
+        ws.send(JSON.stringify(disconnectMessage));
+
         ws.close(); // Cierra la conexión
         cleanMessages();
         const convTitle = document.getElementById('conversationTitle'); // Suponiendo que tienes un <ul> o <ol> con id="messages"
@@ -47,17 +100,26 @@ function closeWebSocket() {
 
 ws.onmessage = function(event) {
     const info = JSON.parse(event.data);
+    if (info.hasOwnProperty("connection")) {
+        addUserStatus(info);
+    }
     createMessage(info);
+
 };
 
 function sendMessage() {
-    const input = document.getElementById("messageText");
-    const message_ = input.value.trim();
-    if (message_ != '') {
-        ws.send(input.value);
-        input.value = '';
-    }
-}
+    if (info.hasOwnProperty("mtype")){
+        if (info.mtype == 'message'){
+            const input = document.getElementById("messageText");
+            const message_ = input.value.trim();
+            if (message_ != '') {
+                ws.send(input.value);
+                input.value = '';
+                sendFile();
+            };
+        };
+    };
+};
 
 
 // Función para obtener mensajes del backend
@@ -83,7 +145,6 @@ function cleanMessages(){
 }
 
 
-// Función para mostrar los mensajes en el DOM
 function displayMessages(messages) {
     const messagesList = document.getElementById('messages'); // Suponiendo que tienes un <ul> o <ol> con id="messages"
     messagesList.innerHTML = ''; // Limpiar mensajes existentes
@@ -92,6 +153,33 @@ function displayMessages(messages) {
         createMessage(message);
     });
 }
+
+async function sendFile() {
+    const fileInput = document.getElementById("fileInputButton");
+    const numberOfFiles = fileInput.files.length;
+    if (numberOfFiles > 0) {
+        const formData = new FormData();
+        console.log("Entra en enviar archivo");
+        formData.append("files", fileInput.files[0]);
+        // Hacer la solicitud para subir el archivo
+        try {
+            const response = await fetch("/v1/upload-files/", {
+                method: "POST",
+                body: formData
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log("Archivos subidos con éxito:", result);
+            } else {
+                console.error("Error al subir los archivos:", response.status, response.statusText);
+            }
+        } catch (error) {
+            console.error("Hubo un problema con la solicitud:", error);
+        }
+    }
+}
+
 
 // Llamar a la función para obtener mensajes
 fetchMessages();
@@ -117,3 +205,32 @@ function formatDateTo12Hour(timeString) {
     // Devolver la fecha en el formato deseado
     return `${hours}:${minutesStr} ${ampm}`;
 }
+
+
+function addFileListener(){
+    // Obtener el ícono y el input de archivo
+    const attachIcon = document.getElementById("attachIcon");
+    const fileInputButton = document.getElementById("fileInputButton");
+
+    // Al hacer clic en el ícono, abrir el diálogo de selección de archivo
+    attachIcon.addEventListener("click", function() {
+        fileInputButton.click();  // Simular clic en el input de archivo oculto
+    });
+
+    fileInputButton.addEventListener('change', function(event) {
+        selectedFile = event.target.files[0];
+        if (selectedFile) {
+            document.getElementById('messageText').value = `Archivo adjuntado: ${selectedFile.name}`;
+        }
+    });
+};
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("Entra aqui");
+    addFileListener();
+});
+
+
+
+

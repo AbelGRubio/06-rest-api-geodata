@@ -73,7 +73,8 @@
 					<div class="input-wrapper">
 						<input type="text" id="messageText" value="" onkeydown="if(event.key === 'Enter'){ sendMessage(); }">
 						<i class="fa fa-smile-o"></i>
-						<i class="fa fa-paperclip"></i>
+						<i class="fa fa-paperclip" id="attachIcon"></i>
+						<input id="fileInputButton" type="file" style="display:none;">
 					</div>
 					<input type="button" onclick="sendMessage()" value="Submit" class="send-btn">
 				</div>
@@ -88,11 +89,11 @@
 				</ul>
 				<ul class="tabs-container">
 					<li class="active">
-						<ul class="member-list">
-							<li><span class="status online"><i class="fa fa-circle-o"></i></span><span>Cucu Ionel</span></li>
-							<li><span class="status online"><i class="fa fa-circle-o"></i></span><span>Christian Smith</span></li>
-							<li><span class="status idle"><i class="fa fa-circle-o"></i></span><span>John Bradley</span><span class="time">10:45 pm</span></li>
-							<li><span class="status offline"><i class="fa fa-circle-o"></i></span><span>Daniel Freitz</span></li>
+						<ul class="member-list" id="memberList">
+<!--							<li><span class="status online"><i class="fa fa-circle-o"></i></span><span>Cucu Ionel</span></li>-->
+<!--							<li><span class="status online"><i class="fa fa-circle-o"></i></span><span>Christian Smith</span></li>-->
+<!--							<li><span class="status idle"><i class="fa fa-circle-o"></i></span><span>John Bradley</span><span class="time">10:45 pm</span></li>-->
+<!--							<li><span class="status offline"><i class="fa fa-circle-o"></i></span><span>Daniel Freitz</span></li>-->
 						</ul>
 					</li>
 					<li></li>

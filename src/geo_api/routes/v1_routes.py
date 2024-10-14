@@ -4,7 +4,7 @@ from typing import List
 from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import JSONResponse
 
-from ..configuration import LOGGER
+from ..configuration import LOGGER, MANAGER
 from ..functions import add_user, update_user, save_file
 from ..models import ApiUser, Message
 from ..schemas import UserSchema, ShowUserSchema, MessageSchema
@@ -46,6 +46,12 @@ async def upload_files(files: List[UploadFile] = File(...)):
     tasks = [save_file(file) for file in files]
     results = await asyncio.gather(*tasks)
     return {"uploaded_files": results}
+
+
+@v1_router.get("/connected_users")
+async def get_connected_users():
+    users = MANAGER.get_connected_users()
+    return {"connected_users": users}
 
 
 @v1_router.get("/users/", response_model=list[ShowUserSchema])
