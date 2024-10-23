@@ -1,9 +1,10 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from .auth import AuthMiddleware
 from .configuration import __version__, DATABASE
-from .models import ApiUser, Message
+from .models import ApiUser, Message, UserConf
 from .routes import api_router, v1_router, ws_router, wb_router
 
 APP = FastAPI(
@@ -46,7 +47,15 @@ APP.include_router(
     tags=["Service 4: web "]
 )
 
-# APP.add_middleware(AuthMiddleware)
+APP.add_middleware(AuthMiddleware)
+
+APP.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200"],  # Cambia por el origen de tu front
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 DATABASE.connect()
-DATABASE.create_tables([ApiUser, Message])
+DATABASE.create_tables([ApiUser, Message, UserConf])

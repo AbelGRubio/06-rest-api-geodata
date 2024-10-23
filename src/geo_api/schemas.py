@@ -30,9 +30,9 @@ class MessageSchema(BaseModel):
     content: str = ''
     timestamp: datetime.datetime or str = datetime.datetime.now()
     mtype: str = MessageType.MESSAGE.value
-    __type_descriptor__ = MessageMode()
 
     class Config:
+        __type_descriptor__ = MessageMode()
         orm_mode = True
         from_attributes = True
 
@@ -40,18 +40,20 @@ class MessageSchema(BaseModel):
     def validate_mode(cls, v):
         if isinstance(v, MessageType):
             v = v.value
-        cls.__type_descriptor__ = v
+        cls.Config.__type_descriptor__ = v
         return v
 
     def connection_msg(self):
-        self.mtype = MessageType.CONNECT
+        self.mtype = MessageType.CONNECT.value
         self.content = "join the chat"
 
     def disconnection_msg(self):
-        self.mtype = MessageType.DISCONNECT
+        self.mtype = MessageType.DISCONNECT.value
         self.content = "left the chat"
 
     def to_json(self):
+        if self.user_id.isdigit():
+            self.user_id = f'Client {self.user_id}'
         dict_ = dict(self)
         dict_['timestamp'] = str(dict_['timestamp'])
         return json.dumps(dict_)

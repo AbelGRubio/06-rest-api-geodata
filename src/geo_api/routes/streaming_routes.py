@@ -4,6 +4,7 @@ from ..configuration import MANAGER
 from ..gpt_connection import chat_with_gpt
 from ..models import Message
 from ..schemas import MessageSchema
+from ..descriptors import MessageType
 
 ws_router = APIRouter()
 
@@ -18,9 +19,11 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
         while True:
             data = await websocket.receive_text()
             message_data = MessageSchema.parse_raw(data)
-            msg = Message.create(user_id=message_data.user_id,
-                                 content=message_data.content)
-            await MANAGER.broadcast(message_data.to_json())
+
+            if message_data.mtype == MessageType.MESSAGE.value:
+                msg = Message.create(user_id=message_data.user_id,
+                                     content=message_data.content)
+                await MANAGER.broadcast(message_data.to_json())
     except WebSocketDisconnect:
         MANAGER.disconnect(client_id)
         msg_ = MessageSchema(user_id=client_id)

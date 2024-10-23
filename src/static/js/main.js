@@ -20,7 +20,7 @@ function createMessage(info){
     span_msg.classList.add("msg-time");
 
     cont_msg.textContent = info.content;
-    name_msg.textContent = 'Client ' + info.user_id;
+    name_msg.textContent = info.user_id;
     span_msg.textContent = formatDateTo12Hour(info.timestamp);
 
 
@@ -81,7 +81,7 @@ function closeWebSocket() {
     if (ws) {
          const disconnectMessage = {
                 user_id: userId,  // Reemplaza con el ID de usuario correspondiente
-                type: 'disconnect',
+                mtype: 'disconnect',
                 content: 'User has disconnected.',
                 timestamp: new Date().toISOString()
             };
@@ -108,16 +108,18 @@ ws.onmessage = function(event) {
 };
 
 function sendMessage() {
-    if (info.hasOwnProperty("mtype")){
-        if (info.mtype == 'message'){
-            const input = document.getElementById("messageText");
-            const message_ = input.value.trim();
-            if (message_ != '') {
-                ws.send(input.value);
-                input.value = '';
-                sendFile();
-            };
+    const input = document.getElementById("messageText");
+    const message_ = input.value.trim();
+    if (message_ != '') {
+        const disconnectMessage = {
+            user_id: userId,  // Reemplaza con el ID de usuario correspondiente
+            mtype: 'message',
+            content: message_,
+            timestamp: new Date().toISOString()
         };
+        ws.send(JSON.stringify(disconnectMessage));
+        input.value = '';
+        sendFile();
     };
 };
 
@@ -227,7 +229,6 @@ function addFileListener(){
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("Entra aqui");
     addFileListener();
 });
 

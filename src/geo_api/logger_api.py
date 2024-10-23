@@ -44,7 +44,7 @@ class LoggerApi(logging.Logger):
     def _configure_logger(self) -> None:
         """configura el logger"""
         self.custom_console_handler = logging.StreamHandler()
-        self.custom_console_handler.setLevel (logging.DEBUG)
+        self.custom_console_handler.setLevel(logging.DEBUG)
 
         formatter = ColoredFormatter(self.msg_format, self.datetime_format)
         self.custom_console_handler.setFormatter(formatter)

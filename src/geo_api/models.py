@@ -1,5 +1,4 @@
-from peewee import (Model, CharField, IntegerField, TextField, DateTimeField,
-                    SQL)
+from peewee import Model, CharField, IntegerField, TextField, DateTimeField
 
 from .configuration import DATABASE
 from datetime import datetime
@@ -23,3 +22,11 @@ class Message(Model):
     class Meta:
         database = DATABASE
         table_name = "messages"
+
+
+class UserConf(Model):
+    UserId = CharField(unique=True)
+    json = CharField()
+
+    class Meta:
+        database = DATABASE

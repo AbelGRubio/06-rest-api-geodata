@@ -54,6 +54,11 @@ async def get_connected_users():
     return {"connected_users": users}
 
 
+@v1_router.get("/user_conf")
+def get_user_conf():
+    return {"datos": "datos_usuario_conf"}
+
+
 @v1_router.get("/users/", response_model=list[ShowUserSchema])
 def user_listing():
     users_ = ApiUser.select()

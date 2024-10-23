@@ -4,7 +4,8 @@ from starlette.middleware.base import BaseHTTPMiddleware, \
     RequestResponseEndpoint
 from starlette.responses import Response
 
-from .configuration import API_KEY
+from .configuration import KEYCLOAK_OPENID, KEYCLOAK_ADMIN
+from .conf_user_manager import ConfUserManager
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -22,6 +23,11 @@ class AuthMiddleware(BaseHTTPMiddleware):
                       '/health', '/favicon.ico']
 
     __name__api_key__ = 'API_KEY'
+    __auth__ = 'authorization'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.conf_manager = ConfUserManager(KEYCLOAK_ADMIN)
 
     @staticmethod
     def unauthorised(
@@ -36,6 +42,21 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
     def get_api_key(self, request: Request) -> str:
         return request.headers.get(self.__name__api_key__, '')
+
+    def decode_token(self, token: str):
+        token_ = token.replace('Bearer ', '')
+        payload = KEYCLOAK_OPENID.decode_token(token_)
+        return payload
+
+    def is_auth(self, request: Request) -> bool:
+        token = request.headers.get(self.__auth__, '')
+        try:
+            decode_token = self.decode_token(token)
+            conf_user_ = self.conf_manager.update_user_conf_if_needed(decode_token)
+            res_ = True
+        except:
+            res_ = False
+        return res_
 
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
@@ -61,7 +82,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
         response = self.unauthorised()
 
-        if self.get_api_key(request) == API_KEY:
+        if self.is_auth(request):
             response = await call_next(request)
 
         return response
