@@ -25,6 +25,7 @@ DATABASE_NAME = config.get('conf', "DATABASE_NAME", fallback="my_database.db")
 API_KEY = os.getenv('API_KEY', 'token')
 SAVE_FOLDER = config.get('conf', 'SAVE_FOLDER', fallback='./save')
 MINUTES_REFRESH_CONF = config.getint('conf', "minutes_refresh_conf", fallback=5)
+CORS_ORIGINS = config.get('conf', "cors_origins", fallback='').split(',')
 
 KEYCLOAK_URL = config.get('keycloak', 'keycloak_url', fallback=None)
 KEYCLOAK_SEC_URL = config.get('keycloak', 'keycloak_sec_url', fallback=None)
