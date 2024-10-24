@@ -1,16 +1,18 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Request
 
 from ..configuration import MANAGER
-from ..gpt_connection import chat_with_gpt
+from app.utils.gpt_connection import chat_with_gpt
 from ..models import Message
-from ..schemas import MessageSchema
-from ..descriptors import MessageType
-
+from app.models.schemas import MessageSchema
+from app.utils.descriptors import MessageType
 ws_router = APIRouter()
 
 
-@ws_router.websocket("/{client_id}")
-async def websocket_endpoint(websocket: WebSocket, client_id: str):
+@ws_router.websocket("/")
+async def websocket_endpoint(
+        request: Request, websocket: WebSocket):
+
+    client_id = request.headers['current-user']
     await MANAGER.connect(client_id, websocket)
     msg_ = MessageSchema(user_id=client_id)
     msg_.connection_msg()
@@ -31,8 +33,9 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
         await MANAGER.broadcast(msg_.to_json())
 
 
-@ws_router.websocket("/gpt/{client_id}")
-async def websocket_endpoint(websocket: WebSocket, client_id: str):
+@ws_router.websocket("/gpt")
+async def websocket_endpoint(request: Request, websocket: WebSocket):
+    client_id = request.headers['current-user']
     await MANAGER.connect(client_id, websocket)
     try:
         while True:

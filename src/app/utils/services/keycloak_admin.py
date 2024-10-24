@@ -6,6 +6,7 @@ class CustomKeycloakAdmin(KeycloakAdmin):
     __client_id__ = 'client_id'
 
     def __init__(self, *args, **kwargs):
+        kwargs['client_id'] = 'admin-cli'
         super().__init__(*args, **kwargs)
         self.client_secret_key = kwargs.get(
             self.__client_secret_key__, '')

@@ -1,18 +1,13 @@
 import uvicorn
 
-from geo_api import APP, LOGGER, API_IP, API_PORT
-from geo_api.schemas import MessageSchema, ShowUserSchema, MessageMode
-
-
-class MyClass:
-    status = MessageMode()
+from app import APP, LOGGER, API_PORT, API_IP
 
 
 if __name__ == '__main__':
     LOGGER.debug("Starting...")
     uvicorn.run(
         APP,
-        host='0.0.0.0',
+        host=API_IP,
         port=API_PORT,
         reload=False, log_level="debug",
     )

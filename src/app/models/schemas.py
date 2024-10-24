@@ -1,7 +1,7 @@
 from pydantic import BaseModel, validator
 import datetime
 import json
-from src.geo_api.descriptors import MessageMode, MessageType
+from app.utils.descriptors import MessageMode, MessageType
 
 
 class UserSchema(BaseModel):

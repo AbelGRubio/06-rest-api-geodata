@@ -4,8 +4,8 @@ from starlette.middleware.base import BaseHTTPMiddleware, \
     RequestResponseEndpoint
 from starlette.responses import Response
 
-from .configuration import KEYCLOAK_OPENID, KEYCLOAK_ADMIN
-from .conf_user_manager import ConfUserManager
+from app.configuration import KEYCLOAK_OPENID, KEYCLOAK_ADMIN
+from app.utils.services.conf_user_manager import ConfUserManager
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -53,6 +53,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
         try:
             decode_token = self.decode_token(token)
             conf_user_ = self.conf_manager.update_user_conf(decode_token)
+            request.headers['current-user'] = decode_token['preferred_username']
             res_ = True
         except:
             res_ = False

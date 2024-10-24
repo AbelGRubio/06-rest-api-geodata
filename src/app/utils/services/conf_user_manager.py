@@ -3,14 +3,14 @@ from datetime import datetime, timedelta
 
 from peewee import DoesNotExist
 
-from .configuration import MINUTES_REFRESH_CONF
-from .keycloak_admin import CustomKeycloakAdmin
-from .models import UserConf
+from app.configuration import MINUTES_REFRESH_CONF
+from app.utils.services.keycloak_admin import CustomKeycloakAdmin
+from app.models import UserConf
 
 
 class ConfUserManager:
     __additional__conf__ = [
-        'user_image'
+        'user_image', 'email', 'preferred_username'
     ]
 
     def __init__(self, keycloak_admin: CustomKeycloakAdmin):
@@ -51,7 +51,8 @@ class ConfUserManager:
 
         return user_conf
 
-    def save_user_conf(self, user_id: str, user_conf: dict) -> None:
+    def save_user_conf(
+            self, user_id: str, user_name: str, user_conf: dict) -> None:
         """Save the user configuration (roles and groups) in the database."""
         user_conf_json = json.dumps(user_conf)
 
@@ -63,16 +64,12 @@ class ConfUserManager:
                 user_conf_record.save()
 
         except DoesNotExist:
-            UserConf.create(UserId=user_id, json=user_conf_json)
+            UserConf.create(
+                user_id=user_id, user_name=user_name, json=user_conf_json)
 
         return None
 
-    def update_user_conf(self, token: dict):
-        """
-        Update the user configuration only if roles or groups have changed."""
-        user_id = token['sub']  # Assume 'sub' contains the user ID
-
-        # Fetch current configuration from the database
+    def get_user_config(self, user_id: str):
         last_update = None
         try:
             user_conf_record = UserConf.get(UserConf.user_id == user_id)
@@ -80,6 +77,15 @@ class ConfUserManager:
             last_update = user_conf_record.last_update
         except DoesNotExist:
             current_conf = {}
+        return current_conf, last_update
+
+    def update_user_conf(self, token: dict):
+        """
+        Update the user configuration only if roles or groups have changed."""
+        user_id = token['sub']  # Assume 'sub' contains the user ID
+        user_name = token['preferred_username']
+        # Fetch current configuration from the database
+        current_conf, last_update = self.get_user_config(user_id)
 
         if (last_update and (datetime.now() - last_update) <
                 timedelta(minutes=MINUTES_REFRESH_CONF)):
@@ -88,6 +94,6 @@ class ConfUserManager:
         new_conf = self.get_user_roles_and_groups(token)
 
         if new_conf != current_conf:
-            self.save_user_conf(user_id, new_conf)
+            self.save_user_conf(user_id, user_name, new_conf)
 
         return new_conf

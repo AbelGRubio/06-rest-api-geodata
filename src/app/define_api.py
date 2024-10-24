@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from .auth import AuthMiddleware
+from app.middleware.auth import AuthMiddleware
 from .configuration import __version__, DATABASE, CORS_ORIGINS
 from .models import ApiUser, Message, UserConf
 from .routes import api_router, v1_router, ws_router, wb_router

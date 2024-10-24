@@ -2,9 +2,9 @@ import os.path
 
 import requests
 
-from .configuration import LOGGER, API_GEO_URL, SAVE_FOLDER, MANAGER
-from .models import ApiUser
-from .schemas import UserSchema
+from app.configuration import LOGGER, API_GEO_URL, SAVE_FOLDER, MANAGER
+from app.models import ApiUser
+from app.models.schemas import UserSchema
 from fastapi import UploadFile
 
 

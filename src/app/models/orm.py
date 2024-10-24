@@ -1,6 +1,6 @@
 from peewee import Model, CharField, IntegerField, TextField, DateTimeField
 
-from .configuration import DATABASE
+from app.configuration import DATABASE
 from datetime import datetime
 
 
@@ -26,6 +26,7 @@ class Message(Model):
 
 class UserConf(Model):
     user_id = CharField(unique=True)
+    user_name = CharField(unique=True)
     json = CharField()
     last_update = DateTimeField(default=datetime.now)
 

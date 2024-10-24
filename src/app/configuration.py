@@ -5,9 +5,9 @@ import openai
 from keycloak import KeycloakOpenID
 from peewee import SqliteDatabase
 
-from .connection_manager import ConnectionManager
-from .keycloak_admin import CustomKeycloakAdmin
-from .logger_api import LoggerApi
+from app.utils.services.connection_manager import ConnectionManager
+from app.utils.services.keycloak_admin import CustomKeycloakAdmin
+from app.utils.logger_api import LoggerApi
 
 __version__ = '0.1.0'
 
@@ -25,7 +25,8 @@ DATABASE_NAME = config.get('conf', "DATABASE_NAME", fallback="my_database.db")
 API_KEY = os.getenv('API_KEY', 'token')
 SAVE_FOLDER = config.get('conf', 'SAVE_FOLDER', fallback='./save')
 MINUTES_REFRESH_CONF = config.getint('conf', "minutes_refresh_conf", fallback=5)
-CORS_ORIGINS = config.get('conf', "cors_origins", fallback='').split(',')
+cors_ = config.get('conf', "cors_origins", fallback='').split(',')
+CORS_ORIGINS = [c_ for c_ in cors_ if c_ != '']
 
 KEYCLOAK_URL = config.get('keycloak', 'keycloak_url', fallback=None)
 KEYCLOAK_SEC_URL = config.get('keycloak', 'keycloak_sec_url', fallback=None)
@@ -44,7 +45,6 @@ KEYCLOAK_ADMIN = CustomKeycloakAdmin(
     username=os.getenv('USER_ADMIN', None),
     password=os.getenv('PSSWRD_ADMIN', None),
     realm_name=REALM,
-    client_id=CLIENT_NAME,
     client_secret_key=CLIENT_SECRET,
     verify=False
 )

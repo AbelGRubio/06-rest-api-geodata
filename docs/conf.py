@@ -9,7 +9,7 @@ import sys
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 add_path = os.path.join(os.getcwd(), os.path.abspath('../src'))
 sys.path.insert(0, add_path)
-from geo_api.configuration import __version__
+from app.configuration import __version__
 
 project = 'REST API'
 copyright = '2024, Abel Garcia'

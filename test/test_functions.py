@@ -5,10 +5,10 @@ from unittest.mock import patch
 
 import requests
 
-from src.geo_api.configuration import API_GEO_URL
-from src.geo_api.functions import add_user, ApiUser, UserSchema, \
+from src.app.configuration import API_GEO_URL
+from app.utils.functions import add_user, ApiUser, UserSchema, \
     check_response_geojson
-from src.geo_api.functions import get_direction_from_response, update_user
+from app.utils.functions import get_direction_from_response, update_user
 
 
 class TestFunctions(unittest.TestCase):

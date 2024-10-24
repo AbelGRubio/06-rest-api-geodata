@@ -5,9 +5,9 @@ from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import JSONResponse
 
 from ..configuration import LOGGER, MANAGER
-from ..functions import add_user, update_user, save_file
+from app.utils.functions import add_user, update_user, save_file
 from ..models import ApiUser, Message
-from ..schemas import UserSchema, ShowUserSchema, MessageSchema
+from app.models.schemas import UserSchema, ShowUserSchema, MessageSchema
 
 v1_router = APIRouter()
 

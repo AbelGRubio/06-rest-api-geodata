@@ -3,12 +3,12 @@ from unittest.mock import patch, Mock, MagicMock
 
 from fastapi.testclient import TestClient
 
-from src.geo_api.configuration import DATABASE, LOGGER
-from src.geo_api.models import ApiUser
-from src.geo_api.routes.api_routes import api_router, close_db
-from src.geo_api.routes.v1_routes import (v1_router, adding_user, user_listing,
-                                          updating_user, delete_user)
-from src.geo_api.schemas import ShowUserSchema, UserSchema
+from src.app.configuration import DATABASE, LOGGER
+from src.app.models import ApiUser
+from src.app.routes.api_routes import api_router, close_db
+from src.app.routes.v1_routes import (v1_router, adding_user, user_listing,
+                                      updating_user, delete_user)
+from app.models.schemas import ShowUserSchema, UserSchema
 
 
 class TestRoutes(unittest.TestCase):
@@ -34,7 +34,7 @@ class TestRoutes(unittest.TestCase):
             "city": "Sample City"
         }
 
-        with patch('src.geo_api.routes.v1_routes.add_user',
+        with patch('src.app.routes.v1_routes.add_user',
                    return_value="Added user 1:John Doe to database."):
             response = client.post('/user', json=user_data)
 
@@ -49,7 +49,7 @@ class TestRoutes(unittest.TestCase):
             ApiUser(id=2, name="Jane Doe", city='67890', postal_code="67890")
         ]
 
-        with patch('src.geo_api.routes.v1_routes.ApiUser.select',
+        with patch('src.app.routes.v1_routes.ApiUser.select',
                    return_value=mock_users):
             response = user_listing()
             expected_response = [ShowUserSchema.model_validate(user)
@@ -59,7 +59,7 @@ class TestRoutes(unittest.TestCase):
     def test_log_error_message_on_exception(self):
         user_parameter = UserSchema(name="test_user", email="test@example.com")
 
-        with patch('src.geo_api.routes.v1_routes.add_user',
+        with patch('src.app.routes.v1_routes.add_user',
                    side_effect=Exception("Test Exception")):
             with patch.object(LOGGER, 'error') as mock_logger_error:
                 response = adding_user(user_parameter)
@@ -73,7 +73,7 @@ class TestRoutes(unittest.TestCase):
             ApiUser(id=2, name="Jane Doe", city='67890', postal_code="67890")
         ]
 
-        with patch('src.geo_api.routes.v1_routes.ApiUser.select',
+        with patch('src.app.routes.v1_routes.ApiUser.select',
                    return_value=mock_users):
             users_ = ApiUser.select()
             result = [ShowUserSchema.from_orm(usr_) for usr_ in users_]
@@ -87,8 +87,8 @@ class TestRoutes(unittest.TestCase):
 
         mock_user = ApiUser(id=user_id, name="John Doe", city='12345', postal_code="12345")
 
-        with patch('src.geo_api.routes.v1_routes.ApiUser.get_or_none', return_value=mock_user):
-            with patch('src.geo_api.routes.v1_routes.update_user', return_value=mock_user):
+        with patch('src.app.routes.v1_routes.ApiUser.get_or_none', return_value=mock_user):
+            with patch('src.app.routes.v1_routes.update_user', return_value=mock_user):
                 response = updating_user(user_id, user_update)
                 self.assertEqual(response.name, "John Doe")
                 self.assertEqual(response.city, "12345")
@@ -98,7 +98,7 @@ class TestRoutes(unittest.TestCase):
 
         user_id = 1
 
-        with patch('src.geo_api.routes.v1_routes.ApiUser.get_or_none') as mock_get_or_none:
+        with patch('src.app.routes.v1_routes.ApiUser.get_or_none') as mock_get_or_none:
             mock_user = MagicMock()
             mock_get_or_none.return_value = mock_user
 
