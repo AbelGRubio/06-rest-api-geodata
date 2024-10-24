@@ -1,10 +1,12 @@
 import json
+from datetime import datetime, timedelta
 
 from peewee import DoesNotExist
 
+from .configuration import MINUTES_REFRESH_CONF
 from .keycloak_admin import CustomKeycloakAdmin
 from .models import UserConf
-from datetime import datetime, timedelta
+
 
 class ConfUserManager:
     __additional__conf__ = [
@@ -65,7 +67,7 @@ class ConfUserManager:
 
         return None
 
-    def update_user_conf_if_needed(self, token: dict):
+    def update_user_conf(self, token: dict):
         """
         Update the user configuration only if roles or groups have changed."""
         user_id = token['sub']  # Assume 'sub' contains the user ID
@@ -79,7 +81,8 @@ class ConfUserManager:
         except DoesNotExist:
             current_conf = {}
 
-        if last_update and (datetime.now() - last_update) < timedelta(minutes=5):
+        if (last_update and (datetime.now() - last_update) <
+                timedelta(minutes=MINUTES_REFRESH_CONF)):
             return current_conf
 
         new_conf = self.get_user_roles_and_groups(token)

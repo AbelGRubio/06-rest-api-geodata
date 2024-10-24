@@ -52,7 +52,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
         token = request.headers.get(self.__auth__, '')
         try:
             decode_token = self.decode_token(token)
-            conf_user_ = self.conf_manager.update_user_conf_if_needed(decode_token)
+            conf_user_ = self.conf_manager.update_user_conf(decode_token)
             res_ = True
         except:
             res_ = False

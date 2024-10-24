@@ -1,3 +1,6 @@
 /example-api
 /pruebas.py
 /log
+/src/.logs/
+/.env
+/src/conf/config.cfg

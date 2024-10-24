@@ -54,3 +54,7 @@ class CustomKeycloakAdmin(KeycloakAdmin):
                 'attributes', {})
 
         return group_with_attributes
+
+    def update_roles_and_groups(self):
+        self.roles = self.get_all_roles_with_attributes()
+        self.groups = self.get_all_groups_with_attributes()

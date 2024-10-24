@@ -1,3 +1,4 @@
+import configparser
 import os
 
 import openai
@@ -12,18 +13,24 @@ __version__ = '0.1.0'
 
 LOGGER = LoggerApi("geodata")
 
-API_IP = os.getenv("API_IP", '0.0.0.0')
-API_PORT = int(os.getenv("API_PORT", 5005))
-API_GEO_URL = os.getenv("API_GEO_URL")
-DATABASE_NAME = os.getenv("DATABASE_NAME", "my_database.db")
-API_KEY = 'token'
-SAVE_FOLDER = os.getenv('SAVE_FOLDER', './save')
+conf_file = os.getenv('CONF_FILE', './conf/config.cfg')
 
-KEYCLOAK_URL = 'http://10.0.0.12:8888/'
-KEYCLOAK_SEC_URL = 'https://10.0.0.12:8843/'
-CLIENT_NAME = 'angular-app'
-CLIENT_SECRET = ''
-REALM = 'chat'
+config = configparser.ConfigParser()
+config.read(conf_file)
+
+API_IP = config.get('conf', "api_ip", fallback='0.0.0.0')
+API_PORT = config.getint('conf', "api_port", fallback=5005)
+API_GEO_URL = config.get('conf', "api_geo_url", fallback=None)
+DATABASE_NAME = config.get('conf', "DATABASE_NAME", fallback="my_database.db")
+API_KEY = os.getenv('API_KEY', 'token')
+SAVE_FOLDER = config.get('conf', 'SAVE_FOLDER', fallback='./save')
+MINUTES_REFRESH_CONF = config.getint('conf', "minutes_refresh_conf", fallback=5)
+
+KEYCLOAK_URL = config.get('keycloak', 'keycloak_url', fallback=None)
+KEYCLOAK_SEC_URL = config.get('keycloak', 'keycloak_sec_url', fallback=None)
+CLIENT_NAME = config.get('keycloak', 'client_name', fallback=None)
+CLIENT_SECRET = os.getenv('CLIENT_SECRET', None)
+REALM = config.get('keycloak', 'realm', fallback=None)
 
 KEYCLOAK_OPENID = KeycloakOpenID(
     server_url=KEYCLOAK_URL,
@@ -33,8 +40,8 @@ KEYCLOAK_OPENID = KeycloakOpenID(
 
 KEYCLOAK_ADMIN = CustomKeycloakAdmin(
     server_url=KEYCLOAK_SEC_URL,
-    username='',
-    password='',
+    username=os.getenv('USER_ADMIN', None),
+    password=os.getenv('PSSWRD_ADMIN', None),
     realm_name=REALM,
     client_id=CLIENT_NAME,
     client_secret_key=CLIENT_SECRET,
