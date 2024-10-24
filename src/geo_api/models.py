@@ -25,8 +25,9 @@ class Message(Model):
 
 
 class UserConf(Model):
-    UserId = CharField(unique=True)
+    user_id = CharField(unique=True)
     json = CharField()
+    last_update = DateTimeField(default=datetime.now)
 
     class Meta:
         database = DATABASE

@@ -4,12 +4,13 @@ from peewee import DoesNotExist
 
 from .keycloak_admin import CustomKeycloakAdmin
 from .models import UserConf
-
+from datetime import datetime, timedelta
 
 class ConfUserManager:
     __additional__conf__ = [
         'user_image'
     ]
+
     def __init__(self, keycloak_admin: CustomKeycloakAdmin):
         self.keycloak_admin = keycloak_admin
 
@@ -17,7 +18,8 @@ class ConfUserManager:
         """Retrieve the roles and groups attributes for a specific user."""
         client_ = self.keycloak_admin.client_id
         # Fetch roles and groups from Keycloak
-        user_roles = token.get('resource_access', {}).get(client_, {}).get('roles', [])
+        user_roles = token.get('resource_access', {}).get(
+            client_, {}).get('roles', [])
         user_groups = token.get('groups', [])
 
         # Combine roles and groups attributes into a dictionary
@@ -52,7 +54,7 @@ class ConfUserManager:
         user_conf_json = json.dumps(user_conf)
 
         try:
-            user_conf_record = UserConf.get(UserConf.UserId == user_id)
+            user_conf_record = UserConf.get(UserConf.user_id == user_id)
 
             if user_conf_record.json != user_conf_json:
                 user_conf_record.json = user_conf_json
@@ -69,11 +71,16 @@ class ConfUserManager:
         user_id = token['sub']  # Assume 'sub' contains the user ID
 
         # Fetch current configuration from the database
+        last_update = None
         try:
-            user_conf_record = UserConf.get(UserConf.UserId == user_id)
+            user_conf_record = UserConf.get(UserConf.user_id == user_id)
             current_conf = json.loads(user_conf_record.json)
+            last_update = user_conf_record.last_update
         except DoesNotExist:
             current_conf = {}
+
+        if last_update and (datetime.now() - last_update) < timedelta(minutes=5):
+            return current_conf
 
         new_conf = self.get_user_roles_and_groups(token)
 
