@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from .auth import AuthMiddleware
-from .configuration import __version__, DATABASE
+from .configuration import __version__, DATABASE, CORS_ORIGINS
 from .models import ApiUser, Message, UserConf
 from .routes import api_router, v1_router, ws_router, wb_router
 
@@ -51,7 +51,7 @@ APP.add_middleware(AuthMiddleware)
 
 APP.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],  # Cambia por el origen de tu front
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

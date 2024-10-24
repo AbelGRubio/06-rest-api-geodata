@@ -3,4 +3,8 @@
 /log
 /src/.logs/
 /.env
+.idea
 /src/conf/config.cfg
+/docs/.logs/
+/docs/.buildinfo
+/test/.logs/
